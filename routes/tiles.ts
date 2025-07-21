@@ -1,23 +1,24 @@
-import express from "express"
-import client from "../sanityClient"
+import express from 'express';
+import { sanityClient } from '../sanityClient';
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/", async (_, res) => {
+router.get('/tiles', async (_req, res) => {
   try {
-    const tiles = await client.fetch(`*[_type == "tile"]{
+    const query = `*[_type == "tile"] | order(orderRank) {
       title,
       description,
       slug,
       link,
       tileType,
       colorTint
-    }`)
-    res.json(tiles)
+    }`;
+    const tiles = await sanityClient.fetch(query);
+    res.json(tiles);
   } catch (err) {
-    console.error("Failed to fetch tiles:", err)
-    res.status(500).json({ error: "Failed to load tiles" })
+    console.error('Error fetching tiles:', err);
+    res.status(500).json({ error: 'Failed to fetch tiles' });
   }
-})
+});
 
-export default router
+export default router;
